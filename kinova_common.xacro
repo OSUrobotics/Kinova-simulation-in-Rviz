@@ -1,0 +1,376 @@
+<?xml version="1.0"?>
+
+
+<root
+        xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:include filename="$(find kinova_description)/urdf/kinova_inertial.xacro"/>
+
+
+    <xacro:property name="J_PI" value="3.1415926535897931"/>
+
+    <xacro:macro name="kinova_marker" params="link_name link_mesh mesh_no">
+        <link name="${link_name}">
+            <!-- change the marker size -->
+            <visual>
+                <geometry>
+                    <mesh
+                            filename="package://kinova_description/meshes/${link_mesh}.dae" scale="0.001 0.001 0.001"/>
+                </geometry>
+                <material name="carbon_fiber">
+                    <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+                </material>
+            </visual>
+            <xacro:kinova_inertial mesh_no="${mesh_no}"/>
+        </link>
+    </xacro:macro>
+
+
+    <xacro:macro name="kinova_armlink" params="link_name link_mesh ring_mesh:=ring_big use_ring_mesh:=false mesh_no">
+        <link name="${link_name}">
+            <visual>
+                <geometry>
+                    <mesh
+                            filename="package://kinova_description/meshes/${link_mesh}.dae"/>
+                </geometry>
+                <material name="carbon_fiber">
+                    <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
+                </material>
+            </visual>
+            <!-- Adding ring to the model -->
+            <xacro:if value="${use_ring_mesh}">
+                <visual>
+                    <geometry>
+                        <mesh
+                                filename="package://kinova_description/meshes/${ring_mesh}.dae"/>
+                    </geometry>
+                </visual>
+            </xacro:if>
+            <!-- Collision checking -->
+            <collision>
+                <geometry>
+                    <mesh
+                            filename="package://kinova_description/meshes/${link_mesh}.dae"/>
+                </geometry>
+            </collision>
+            <xacro:kinova_inertial mesh_no="${mesh_no}"/>
+        </link>
+
+    </xacro:macro>
+
+    <xacro:macro name="kinova_armjoint"
+                 params="joint_name type parent child joint_axis_xyz joint_origin_xyz joint_origin_rpy joint_lower_limit joint_upper_limit joint_velocity_limit joint_torque_limit fixed:=false">
+        <joint name="${joint_name}" type="${type}">
+            <parent link="${parent}"/>
+            <child link="${child}"/>
+            <axis xyz="${joint_axis_xyz}"/>
+            <limit effort="${joint_torque_limit}" velocity="${joint_velocity_limit}" lower="${joint_lower_limit}"
+                   upper="${joint_upper_limit}"/>
+            <origin xyz="${joint_origin_xyz}" rpy="${joint_origin_rpy}"/>
+            <dynamics damping="0.0" friction="0.0"/>
+        </joint>
+        <xacro:unless value="${fixed}">
+            <transmission name="${joint_name}_trans">
+                <type>transmission_interface/SimpleTransmission</type>
+                <joint name="${joint_name}">
+                    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                </joint>
+                <actuator name="${joint_name}_actuator">
+                    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                    <mechanicalReduction>160</mechanicalReduction>
+                </actuator>
+            </transmission>
+            <!--For torque sensing in simulation-->
+            <gazebo reference="${joint_name}">
+                <provideFeedback>true</provideFeedback>
+            </gazebo>
+            <gazebo>
+                <plugin name="ft_sensor" filename="libgazebo_ros_ft_sensor.so">
+                    <updateRate>30.0</updateRate>
+                    <topicName>${joint_name}_ft_sensor_topic</topicName>
+                    <jointName>${joint_name}</jointName>
+                </plugin>
+            </gazebo>
+        </xacro:unless>
+    </xacro:macro>
+
+
+    <xacro:macro name="kinova_virtual_link" params="link_name">
+        <link name="${link_name}"/>
+    </xacro:macro>
+
+    <xacro:macro name="kinova_virtual_joint"
+                 params="joint_name type parent child joint_axis_xyz joint_origin_xyz joint_origin_rpy joint_lower_limit joint_upper_limit">
+        <joint name="${joint_name}" type="${type}">
+            <parent link="${parent}"/>
+            <child link="${child}"/>
+            <axis xyz="${joint_axis_xyz}"/>
+            <limit effort="2000" velocity="1" lower="${joint_lower_limit}" upper="${joint_upper_limit}"/>
+            <origin xyz="${joint_origin_xyz}" rpy="${joint_origin_rpy}"/>
+        </joint>
+    </xacro:macro>
+
+
+    <xacro:macro name="kinova_finger" params="prefix finger_number hand finger_origin_xyz finger_origin_rpy">
+        <!--prefix = j2s7s300_ -->
+        <xacro:unless value="${finger_number - 1}">
+            <xacro:kinova_armlink link_name="${prefix}link_finger_${finger_number}" link_mesh="finger_marker_Prox1" mesh_no="57"/>
+            <!-- the link name = j2s7s300_link_finger_1-->
+            <!-- the link name = j2s7s300_link_finger_2-->
+            <!-- the link name = j2s7s300_link_finger_3-->
+
+            <joint name="${prefix}joint_finger_${finger_number}" type="revolute">
+                <parent link="${hand}"/>
+                <!--parent = j2s7s300_link_7 -->
+                <child link="${prefix}link_finger_${finger_number}"/>
+                <axis xyz="0 0 1"/>
+                <origin xyz="${finger_origin_xyz}" rpy="${finger_origin_rpy}"/>
+                <limit lower="0" upper="1.51" effort="2" velocity="1"/>
+            </joint>
+            <transmission name="${prefix}joint_finger_${finger_number}_trans">
+                <type>transmission_interface/SimpleTransmission</type>
+                <joint name="${prefix}joint_finger_${finger_number}">
+                    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                </joint>
+                <actuator name="${prefix}joint_finger_${finger_number}_actuator">
+                    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                    <mechanicalReduction>1</mechanicalReduction>
+                </actuator>
+            </transmission>
+
+
+            <xacro:kinova_armlink link_name="${prefix}link_finger_tip_${finger_number}" link_mesh="finger_marker_Dist1" mesh_no="58"/>
+            <!-- the link name = j2s7s300_link_finger_tip_1-->
+            <!-- the link name = j2s7n300_link_finger_tip_2-->
+            <!-- the link name = j2s7n300_link_finger_tip_3-->
+
+            <joint name="${prefix}joint_finger_tip_${finger_number}" type="revolute">
+                <parent link="${prefix}link_finger_${finger_number}"/>
+                <!-- the link name = j2s7s300_link_finger_1-->
+                <!-- the link name = j2s7s300_link_finger_2-->
+                <!-- the link name = j2s7s300_link_finger_3-->
+                <child link="${prefix}link_finger_tip_${finger_number}"/>
+                <axis xyz="0 0 1"/>
+                <origin xyz="0.044 -0.003 0" rpy="0 0 0"/>
+                <limit lower="0" upper="2" effort="2" velocity="1"/>
+            </joint>
+            <transmission name="${prefix}joint_finger_tip_${finger_number}_trans">
+                <type>transmission_interface/SimpleTransmission</type>
+                <joint name="${prefix}joint_finger_tip_${finger_number}">
+                    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                </joint>
+                <actuator name="${prefix}joint_finger_tip_${finger_number}_actuator">
+                    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                    <mechanicalReduction>1</mechanicalReduction>
+                </actuator>
+            </transmission>
+        </xacro:unless>
+
+        <!--prefix = j2s7s300_ -->
+        <xacro:unless value="${finger_number - 2}">
+            <xacro:kinova_armlink link_name="${prefix}link_finger_${finger_number}" link_mesh="finger_marker_Prox2" mesh_no="57"/>
+            <!-- the link name = j2s7s300_link_finger_1-->
+            <!-- the link name = j2s7s300_link_finger_2-->
+            <!-- the link name = j2s7s300_link_finger_3-->
+
+            <joint name="${prefix}joint_finger_${finger_number}" type="revolute">
+                <parent link="${hand}"/>
+                <!--parent = j2s7s300_link_7 -->
+                <child link="${prefix}link_finger_${finger_number}"/>
+                <axis xyz="0 0 1"/>
+                <origin xyz="${finger_origin_xyz}" rpy="${finger_origin_rpy}"/>
+                <limit lower="0" upper="1.51" effort="2" velocity="1"/>
+            </joint>
+            <transmission name="${prefix}joint_finger_${finger_number}_trans">
+                <type>transmission_interface/SimpleTransmission</type>
+                <joint name="${prefix}joint_finger_${finger_number}">
+                    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                </joint>
+                <actuator name="${prefix}joint_finger_${finger_number}_actuator">
+                    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                    <mechanicalReduction>1</mechanicalReduction>
+                </actuator>
+            </transmission>
+
+
+            <xacro:kinova_armlink link_name="${prefix}link_finger_tip_${finger_number}" link_mesh="finger_marker_Dist2" mesh_no="58"/>
+            <!-- the link name = j2s7s300_link_finger_tip_1-->
+            <!-- the link name = j2s7n300_link_finger_tip_2-->
+            <!-- the link name = j2s7n300_link_finger_tip_3-->
+
+            <joint name="${prefix}joint_finger_tip_${finger_number}" type="revolute">
+                <parent link="${prefix}link_finger_${finger_number}"/>
+                <!-- the link name = j2s7s300_link_finger_1-->
+                <!-- the link name = j2s7s300_link_finger_2-->
+                <!-- the link name = j2s7s300_link_finger_3-->
+                <child link="${prefix}link_finger_tip_${finger_number}"/>
+                <axis xyz="0 0 1"/>
+                <origin xyz="0.044 -0.003 0" rpy="0 0 0"/>
+                <limit lower="0" upper="2" effort="2" velocity="1"/>
+            </joint>
+            <transmission name="${prefix}joint_finger_tip_${finger_number}_trans">
+                <type>transmission_interface/SimpleTransmission</type>
+                <joint name="${prefix}joint_finger_tip_${finger_number}">
+                    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                </joint>
+                <actuator name="${prefix}joint_finger_tip_${finger_number}_actuator">
+                    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                    <mechanicalReduction>1</mechanicalReduction>
+                </actuator>
+            </transmission>
+        </xacro:unless>
+
+        <!--prefix = j2s7s300_ -->
+        <xacro:unless value="${finger_number - 3}">
+            <xacro:kinova_armlink link_name="${prefix}link_finger_${finger_number}" link_mesh="finger_proximal" mesh_no="57"/>
+            <!-- the link name = j2s7s300_link_finger_1-->
+            <!-- the link name = j2s7s300_link_finger_2-->
+            <!-- the link name = j2s7s300_link_finger_3-->
+
+            <joint name="${prefix}joint_finger_${finger_number}" type="revolute">
+                <parent link="${hand}"/>
+                <!--parent = j2s7s300_link_7 -->
+                <child link="${prefix}link_finger_${finger_number}"/>
+                <axis xyz="0 0 1"/>
+                <origin xyz="${finger_origin_xyz}" rpy="${finger_origin_rpy}"/>
+                <limit lower="0" upper="1.51" effort="2" velocity="1"/>
+            </joint>
+            <transmission name="${prefix}joint_finger_${finger_number}_trans">
+                <type>transmission_interface/SimpleTransmission</type>
+                <joint name="${prefix}joint_finger_${finger_number}">
+                    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                </joint>
+                <actuator name="${prefix}joint_finger_${finger_number}_actuator">
+                    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                    <mechanicalReduction>1</mechanicalReduction>
+                </actuator>
+            </transmission>
+
+
+            <xacro:kinova_armlink link_name="${prefix}link_finger_tip_${finger_number}" link_mesh="finger_distal" mesh_no="58"/>
+            <!-- the link name = j2s7s300_link_finger_tip_1-->
+            <!-- the link name = j2s7n300_link_finger_tip_2-->
+            <!-- the link name = j2s7n300_link_finger_tip_3-->
+
+            <joint name="${prefix}joint_finger_tip_${finger_number}" type="revolute">
+                <parent link="${prefix}link_finger_${finger_number}"/>
+                <!-- the link name = j2s7s300_link_finger_1-->
+                <!-- the link name = j2s7s300_link_finger_2-->
+                <!-- the link name = j2s7s300_link_finger_3-->
+                <child link="${prefix}link_finger_tip_${finger_number}"/>
+                <axis xyz="0 0 1"/>
+                <origin xyz="0.044 -0.003 0" rpy="0 0 0"/>
+                <limit lower="0" upper="2" effort="2" velocity="1"/>
+            </joint>
+            <transmission name="${prefix}joint_finger_tip_${finger_number}_trans">
+                <type>transmission_interface/SimpleTransmission</type>
+                <joint name="${prefix}joint_finger_tip_${finger_number}">
+                    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                </joint>
+                <actuator name="${prefix}joint_finger_tip_${finger_number}_actuator">
+                    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                    <mechanicalReduction>1</mechanicalReduction>
+                </actuator>
+            </transmission>
+        </xacro:unless>
+
+    </xacro:macro>
+
+    <xacro:macro name="kinova_finger_ArUco_Marker" params="prefix finger_number finger finger_origin_xyz finger_origin_rpy">
+        <!-- prefix = j2s7s300_ -->
+        <!-- finger_number = 1, 2 -->
+        <!-- finger = j2s7s300_link_finger -->
+        <xacro:unless value="${finger_number - 1}">
+            <xacro:kinova_marker link_name="${prefix}link_finger_${finger_number}_ArUco_Marker_Proximal" link_mesh="ArucoMarkerProx1" mesh_no="101"/>
+            <!-- finger_number = 1 -->
+            <!-- link_name = j2s7s300_link_finger_1_ArUco_Marker_Proximal -->
+                <joint name="${prefix}joint_finger_${finger_number}_ArUco_Marker_Proximal" type="fixed">
+                    <parent link="${finger}_${finger_number}"/>
+                    <!--parent = j2s7s300_link_finger_1 -->
+                    <child link="${prefix}link_finger_${finger_number}_ArUco_Marker_Proximal"/>
+                    <axis xyz="0 0 1"/>
+                    <origin xyz="0.02 -0.035 0" rpy="0 0 -2"/>
+                    <limit lower="0" upper="1.51" effort="2" velocity="1"/>
+                </joint>
+                <transmission name="${prefix}joint_finger_${finger_number}_ArUco_Marker_Proximal_trans">
+                    <type>transmission_interface/SimpleTransmission</type>
+                    <joint name="${prefix}joint_finger_${finger_number}_ArUco_Marker_Proximal">
+                        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                    </joint>
+                    <actuator name="${prefix}joint_finger_${finger_number}_ArUco_Marker_Proximal_actuator">
+                        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                        <mechanicalReduction>1</mechanicalReduction>
+                    </actuator>
+                </transmission>
+
+            <xacro:kinova_marker link_name="${prefix}link_finger_${finger_number}_ArUco_Marker_Distal" link_mesh="ArucoMarkerDist1" mesh_no="103"/>
+
+                <joint name="${prefix}joint_finger_${finger_number}_ArUco_Marker_Distal" type="fixed">
+                    <parent link="${finger}_tip_${finger_number}"/>
+                    <!--parent = j2s7n300_link_finger_tip_1 -->
+                    <child link="${prefix}link_finger_${finger_number}_ArUco_Marker_Distal"/>
+                    <axis xyz="0 0 1"/>
+                    <origin xyz="0.02 -0.025 0" rpy="0 0 -2"/>
+                    <limit lower="0" upper="2" effort="2" velocity="1"/>
+                </joint>
+                <transmission name="${prefix}joint_finger_${finger_number}_ArUco_Marker_Distal_trans">
+                    <type>transmission_interface/SimpleTransmission</type>
+                    <joint name="${prefix}joint_finger_${finger_number}_ArUco_Marker_Distal">
+                        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                    </joint>
+                    <actuator name="${prefix}joint_finger_${finger_number}_ArUco_Marker_Distal_actuator">
+                        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                        <mechanicalReduction>1</mechanicalReduction>
+                    </actuator>
+                </transmission>
+        </xacro:unless>
+
+        <xacro:unless value="${finger_number - 2}">
+            <xacro:kinova_marker link_name="${prefix}link_finger_${finger_number}_ArUco_Marker_Proximal" link_mesh="ArucoMarkerProx2" mesh_no="102"/>
+            <!-- finger_number = 2 -->
+            <!-- link_name = j2s7s300_link_finger_1_ArUco_Marker_Proximal -->
+                <joint name="${prefix}joint_finger_${finger_number}_ArUco_Marker_Proximal" type="fixed">
+                    <parent link="${finger}_${finger_number}"/>
+                    <!--parent = j2s7s300_link_finger_2 -->
+                    <child link="${prefix}link_finger_${finger_number}_ArUco_Marker_Proximal"/>
+                    <axis xyz="0 0 1"/>
+                    <origin xyz="0.02 -0.035 0" rpy="0 0 2"/>
+                    <limit lower="0" upper="1.51" effort="2" velocity="1"/>
+                </joint>
+                <transmission name="${prefix}joint_finger_${finger_number}_ArUco_Marker_Proximal_trans">
+                    <type>transmission_interface/SimpleTransmission</type>
+                    <joint name="${prefix}joint_finger_${finger_number}_ArUco_Marker_Proximal">
+                        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                    </joint>
+                    <actuator name="${prefix}joint_finger_${finger_number}_ArUco_Marker_Proximal_actuator">
+                        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                        <mechanicalReduction>1</mechanicalReduction>
+                    </actuator>
+                </transmission>
+
+            <xacro:kinova_marker link_name="${prefix}link_finger_${finger_number}_ArUco_Marker_Distal" link_mesh="ArucoMarkerDist2" mesh_no="103"/>
+
+                <joint name="${prefix}joint_finger_${finger_number}_ArUco_Marker_Distal" type="fixed">
+                    <parent link="${finger}_tip_${finger_number}"/>
+                    <!--parent = j2s7n300_link_finger_tip_2 -->
+                    <child link="${prefix}link_finger_${finger_number}_ArUco_Marker_Distal"/>
+                    <axis xyz="0 0 1"/>
+                    <origin xyz="0.02 -0.025 0" rpy="0 0 2"/>
+                    <limit lower="0" upper="2" effort="2" velocity="1"/>
+                </joint>
+                <transmission name="${prefix}joint_finger_${finger_number}_ArUco_Marker_Distal_trans">
+                    <type>transmission_interface/SimpleTransmission</type>
+                    <joint name="${prefix}joint_finger_${finger_number}_ArUco_Marker_Distal">
+                        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                    </joint>
+                    <actuator name="${prefix}joint_finger_${finger_number}_ArUco_Marker_Distal_actuator">
+                        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                        <mechanicalReduction>1</mechanicalReduction>
+                    </actuator>
+                </transmission>
+        </xacro:unless>
+
+    </xacro:macro>
+
+
+</root>
