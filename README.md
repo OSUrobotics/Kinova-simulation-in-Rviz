@@ -6,13 +6,12 @@ This code reconstructs the environment of the Kinova arm simulation in Rviz.
 
 In the folder, it contain two other folder "src" and "visualization"
 
-### src
+* src
+	* In this folder, we mainly want to run the "arm_calibration.py" to get the calibaration matrixs.
 
-In this folder, we mainly want to run the "arm_calibration.py" to get the calibaration matrixs.
+* visualization
 
-### visualization
-
-In this folder, it contain the launch file, and test data. It is worth noting that the difference from the previous one is that the path planning file in the launch file is changed to "kinova_path_planning_finger.py". The previous one "kinova_path_planning.py" file cannot move the kinova finger.
+	* In this folder, it contain the launch file, and test data. It is worth noting that the difference from the previous one is that the path planning file in the launch file is changed to "kinova_path_planning_finger.py". The previous one "kinova_path_planning.py" file cannot move the kinova finger.
 
 ## new_meshes
 
