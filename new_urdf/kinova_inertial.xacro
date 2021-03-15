@@ -249,6 +249,23 @@
     </inertial>
   </xacro:unless>
 
+  <!-- table = 10 -->
+  <xacro:unless value="${mesh_no - 10}">
+    <inertial>
+        <mass value="0.46784" />
+        <origin xyz="0 0 0.1255" rpy="0 0 0"/>
+        <!-- xacro:inertia_cylinder height="0.14"  radius = "0.04" mass="0.46784"/ -->
+    </inertial>
+  </xacro:unless>
+
+  <!-- object = 11 -->
+  <xacro:unless value="${mesh_no - 11}">
+    <inertial>
+        <mass value="0.46784" />
+        <origin xyz="0 0 0.1255" rpy="0 0 0"/>
+        <xacro:inertia_cylinder height="0.14"  radius = "0.04" mass="0.46784" />
+    </inertial>
+  </xacro:unless>
 
 </xacro:macro>
 </root>

@@ -30,8 +30,7 @@
         <link name="${link_name}">
             <visual>
                 <geometry>
-                    <mesh
-                            filename="package://kinova_description/meshes/${link_mesh}.dae"/>
+                    <mesh filename="package://kinova_description/meshes/${link_mesh}.dae"/>
                 </geometry>
                 <material name="carbon_fiber">
                     <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1"/>
@@ -41,16 +40,14 @@
             <xacro:if value="${use_ring_mesh}">
                 <visual>
                     <geometry>
-                        <mesh
-                                filename="package://kinova_description/meshes/${ring_mesh}.dae"/>
+                        <mesh filename="package://kinova_description/meshes/${ring_mesh}.dae"/>
                     </geometry>
                 </visual>
             </xacro:if>
             <!-- Collision checking -->
             <collision>
                 <geometry>
-                    <mesh
-                            filename="package://kinova_description/meshes/${link_mesh}.dae"/>
+                    <mesh filename="package://kinova_description/meshes/${link_mesh}.dae"/>
                 </geometry>
             </collision>
             <xacro:kinova_inertial mesh_no="${mesh_no}"/>
@@ -58,8 +55,7 @@
 
     </xacro:macro>
 
-    <xacro:macro name="kinova_armjoint"
-                 params="joint_name type parent child joint_axis_xyz joint_origin_xyz joint_origin_rpy joint_lower_limit joint_upper_limit joint_velocity_limit joint_torque_limit fixed:=false">
+    <xacro:macro name="kinova_armjoint" params="joint_name type parent child joint_axis_xyz joint_origin_xyz joint_origin_rpy joint_lower_limit joint_upper_limit joint_velocity_limit joint_torque_limit fixed:=false">
         <joint name="${joint_name}" type="${type}">
             <parent link="${parent}"/>
             <child link="${child}"/>

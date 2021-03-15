@@ -22,7 +22,9 @@
     <!-- Import all Gazebo-customization elements -->
     <xacro:include filename="$(find kinova_description)/urdf/kinova.gazebo" />
 
-    <xacro:property name="link_base_mesh" value="base" />
+    <xacro:property name="link_base_mesh" value="base_table" />
+    <!-- xacro:property name="link_table_mesh" value="table" / -->
+    <xacro:property name="link_object_mesh" value="large_vase_2" />
     <xacro:property name="link_1_mesh" value="shoulder" />
     <xacro:property name="link_2_mesh" value="arm_half_1" />
     <xacro:property name="link_3_mesh" value="arm_half_2" />
@@ -38,6 +40,8 @@
         hand 3 finger 55, hand_2finger 56, finger_proximal 57, finger_distal 58
     -->
     <xacro:property name="link_base_mesh_no" value="0" />
+    <!-- xacro:property name="link_table_mesh_no" value="10" / -->
+    <xacro:property name="link_object_mesh_no" value="11" />
     <xacro:property name="link_1_mesh_no" value="1" />
     <xacro:property name="link_2_mesh_no" value="6" />
     <xacro:property name="link_3_mesh_no" value="7" />
@@ -51,6 +55,18 @@
     <xacro:property name="joint_base_axis_xyz" value="0 0 0" />
     <xacro:property name="joint_base_origin_xyz" value="0 0 0" />
     <xacro:property name="joint_base_origin_rpy" value="0 0 0" />
+
+    <!-- xacro:property name="joint_table" value="joint_table" / -->
+    <!-- xacro:property name="joint_table_type" value="fixed" / -->
+    <!-- xacro:property name="joint_table_axis_xyz" value="0 0 0" / -->
+    <!-- xacro:property name="joint_table_origin_xyz" value="0 0 0" /-->
+    <!-- xacro:property name="joint_table_origin_rpy" value="0 0 0" /-->
+
+    <xacro:property name="joint_object" value="joint_object" />
+    <xacro:property name="joint_object_type" value="fixed" />
+    <xacro:property name="joint_object_axis_xyz" value="0 0 0" />
+    <xacro:property name="joint_object_origin_xyz" value="0 -0.5 0.05" />
+    <xacro:property name="joint_object_origin_rpy" value="0 0 0" />
 
     <xacro:property name="joint_1" value="joint_1" />
     <xacro:property name="joint_1_type" value="continuous" />
@@ -135,6 +151,13 @@
 
         <xacro:kinova_armlink link_name="${prefix}_link_base" link_mesh="${link_base_mesh}" mesh_no="${link_base_mesh_no}"/>
         <xacro:kinova_armjoint joint_name="${prefix}_joint_base" type="${joint_base_type}" parent="${base_parent}" child="${prefix}_link_base" joint_axis_xyz="${joint_base_axis_xyz}" joint_origin_xyz="${joint_base_origin_xyz}" joint_origin_rpy="${joint_base_origin_rpy}" joint_lower_limit="0" joint_upper_limit="0" joint_velocity_limit="0" joint_torque_limit="0" fixed="true"/>
+
+        <!-- xacro:kinova_armlink link_name="${prefix}_link_table" link_mesh="${link_table_mesh}" mesh_no="${link_table_mesh_no}"/ -->
+        <!-- xacro:kinova_armjoint joint_name="${prefix}_joint_table" type="${joint_table_type}" parent="${base_parent}" child="${prefix}_link_table" joint_axis_xyz="${joint_table_axis_xyz}" joint_origin_xyz="${joint_table_origin_xyz}" joint_origin_rpy="${joint_table_origin_rpy}" joint_lower_limit="0" joint_upper_limit="0" joint_velocity_limit="0" joint_torque_limit="0" fixed="true"/ -->
+
+        <xacro:kinova_armlink link_name="${prefix}_link_object" link_mesh="${link_object_mesh}" mesh_no="${link_object_mesh_no}"/>
+        <xacro:kinova_armjoint joint_name="${prefix}_joint_object" type="${joint_object_type}" parent="${base_parent}" child="${prefix}_link_object" joint_axis_xyz="${joint_object_axis_xyz}" joint_origin_xyz="${joint_object_origin_xyz}" joint_origin_rpy="${joint_object_origin_rpy}" joint_lower_limit="0" joint_upper_limit="0" joint_velocity_limit="0" joint_torque_limit="0" fixed="true"/>
+
 
         <xacro:kinova_armlink link_name="${prefix}_link_1" link_mesh="${link_1_mesh}" use_ring_mesh="true" mesh_no="${link_1_mesh_no}"/>
         <xacro:kinova_armjoint joint_name="${prefix}_joint_1" type="${joint_1_type}" parent="${prefix}_link_base" child="${prefix}_link_1" joint_axis_xyz="${joint_1_axis_xyz}" joint_origin_xyz="${joint_1_origin_xyz}" joint_origin_rpy="${joint_1_origin_rpy}" joint_lower_limit="${joint_1_lower_limit}" joint_upper_limit="${joint_1_upper_limit}" joint_velocity_limit="${joint_1_velocity_limit}" joint_torque_limit="${joint_1_torque_limit}"/>
