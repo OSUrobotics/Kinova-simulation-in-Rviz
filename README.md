@@ -23,7 +23,14 @@ In this folder, rewrite all urdf files of j2s7s300 model. Mainly modify the fing
 
 ## launch file
 
-If you want to add a virtual camera in Rviz, you need to replace your launch file
+If you want to add a virtual camera in Rviz, you need to replace your launch file. There is a link that how to set a virtual camera, https://roboticsknowledgebase.com/wiki/tools/stream-rviz/.
+
+If you want to view the image please run:
+rosrun image_view image_view image:= [your topic] in this case the topic is /camera1
+
+If you want to save the image please run:
+rosrun image_view image_saver image:= [your topic] in this case the topic is /camera1
+
 
 ## Run Code
 
