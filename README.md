@@ -48,7 +48,7 @@ Then, move the files in the new_mesh and new_urdf to the kinova_ws/src/kinova_ro
 * In the first terminal run the kinova virtual launch file(if you do not contact with real kinova arm):
 	* roslaunch j2s7s300_moveit_config j2s7s300_virtual_robot_demo.launch
 * Once Rviz opens run the following in the second terminal:
-	* Please run this command in python 2.7
+	* Please run follow command in python 2.7
 	* roslaunch kinova_scripts rob514_visual.launch
 *	In the third terminal run the following:
 	* rosrun kinova_scripts joint_angles.py <#>
