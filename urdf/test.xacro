@@ -1,0 +1,33 @@
+    <!-- Add the marker to the finger -->
+    <!-- prefix = j2s7s300 -->
+
+    <xacro:kinova_3fingers_ArUco_Marker link_finger="${prefix}_link_finger" prefix="${prefix}_"/>
+    <!-- link_finger = j2s7s300_link_finger -->
+    <!-- prefix = j2s7s300_ -->
+
+    <!--Add the marker to the palm -->
+
+    <xacro:kinova_marker link_name="${prefix}_link_7_marker" link_mesh="finger_Marker" mesh_no="100"/>
+        <joint name="${prefix}_link_7_marker" type="fixed">
+            <parent link="${prefix}_link_7"/>
+            <!--parent = j2s7n300_link_7 -->
+            <child link="${prefix}_link_7_marker"/>
+            <axis xyz="0 0 1"/>
+            <origin xyz="0.04 0.01 -0.05" rpy="-0.3 1.5 0"/>
+            <limit lower="0" upper="1.51" effort="2" velocity="1"/>
+        </joint>
+
+    <xacro:macro name="kinova_3fingers_ArUco_Marker" params="link_finger prefix">
+	<!--link_finger = j2s7s300_link_finger -->
+	<!--prefix = j2s7s300_ -->
+
+
+        <!-- finger1 Rot := Ry((1/2)*Pi) . Rx(12.1*((1/180)*Pi)+Pi) . Rz(-52.8*((1/180)*Pi)) -->
+        <xacro:kinova_finger_ArUco_Marker prefix="${prefix}" finger_number="1" finger="${link_finger}" finger_origin_xyz="0.00279 0.03126 -0.11467" finger_origin_rpy="-1.570796327 .649262481663582 1.35961148639407"/>
+        <!-- finger2 Rot := Ry((1/2)*Pi) . Rx(10.58*((1/180)*Pi)) . Rz(-52.8*((1/180)*Pi)) -->
+        <xacro:kinova_finger_ArUco_Marker prefix="${prefix}" finger_number="2" finger="${link_finger}" finger_origin_xyz="0.02226 -0.02707 -0.11482" finger_origin_rpy="-1.570796327 .649262481663582 -1.38614049188413"/>
+        <!-- we do have the marker on the finger 3 -->
+        <!-- finger3 Rot := Ry((1/2)*Pi) . Rx(-10.58*((1/180)*Pi)) . Rz(-52.8*((1/180)*Pi)) -->
+        <!-- xacro:kinova_finger_ArUco_Marker prefix="${prefix}" finger_number="3" finger="${link_finger}" finger_origin_xyz="-0.02226 -0.02707 -0.11482" finger_origin_rpy="-1.570796327 .649262481663582 -1.75545216211587"/ -->
+
+    </xacro:macro>
