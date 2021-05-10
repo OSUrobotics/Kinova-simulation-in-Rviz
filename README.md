@@ -26,10 +26,20 @@ In this folder, rewrite all urdf files of j2s7s300 model. Mainly modify the fing
 If you want to add a virtual camera in Rviz, you need to replace your launch file. There is a link that how to set a virtual camera, https://roboticsknowledgebase.com/wiki/tools/stream-rviz/.
 
 If you want to view the image please run:
-rosrun image_view image_view image:= [your topic] in this case the topic is /camera1
+rosrun image_view image_view image:= <your topic>
+In this case:
+rosrun image_view image_view image:=/camera1
 
 If you want to save the image please run:
-rosrun image_view image_saver image:= [your topic] in this case the topic is /camera1
+rosrun image_view image_saver image:= <your topic>
+In this case:
+rosrun image_view image_saver image:=/camera1
+
+If you want to record a video from camera window:
+rosrun image_virw video_recorder _filename:='<The video file name>' _fps:=<The number of fps> image:=<your topic>
+In this case:
+rosrun image_view video_recorder _filename:'test.avi' _fps:=60fps image:=/camera1
+if you do not set the 'filename' and 'fps', the default value of filename = output.avi and fps = 15fps
 
 
 ## Run Code
