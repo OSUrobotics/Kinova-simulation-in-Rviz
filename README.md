@@ -38,7 +38,7 @@ In this case:
 * rosrun image_view image_saver image:=/camera1
 
 If you want to record a video from camera window:
-* rosrun image_virw video_recorder _filename:='[The video file name]' _fps:=[The number of fps] image:=[your topic]
+* rosrun image_view video_recorder _filename:='[The video file name]' _fps:=[The number of fps] image:=[your topic]
 
 In this case:
 * rosrun image_view video_recorder _filename:'test.avi' _fps:=60fps image:=/camera1
