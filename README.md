@@ -41,7 +41,7 @@ If you want to record a video from camera window:
 * rosrun image_view video_recorder _filename:='[The video file name]' _fps:=[The number of fps] image:=[your topic]
 
 In this case:
-* rosrun image_view video_recorder _filename:'test.avi' _fps:=60fps image:=/camera1
+* rosrun image_view video_recorder _filename:'test.avi' _fps:=60 image:=/camera1
 
 if you do not set the 'filename' and 'fps', the default value of filename = output.avi and fps = 15fps
 
