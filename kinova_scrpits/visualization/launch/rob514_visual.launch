@@ -1,0 +1,15 @@
+
+
+<launch>
+
+    <node pkg="kinova_scripts" name="camera_frame_tf" type="camera_tf.py" />
+
+    <!-- node pkg="kinova_scripts" name="markers" type="markers.py" / -->
+
+    <node pkg="kinova_scripts" name="camera_markers" type="markers_all.py" />
+    
+    <node pkg="kinova_scripts" name="move_kinova" type="kinova_path_planning_finger.py" />
+
+    <param name="file_number" type="string" value="0" />
+
+</launch>
