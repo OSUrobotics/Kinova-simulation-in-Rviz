@@ -24,7 +24,6 @@
 
     <xacro:macro name="kinova_table" params="link_name link_mesh mesh_no">
         <link name="${link_name}">
-            <!-- change the marker size -->
             <visual>
                 <geometry>
                     <mesh filename="package://kinova_description/meshes/${link_mesh}.dae" />

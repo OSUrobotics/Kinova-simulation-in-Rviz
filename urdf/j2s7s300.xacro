@@ -22,8 +22,8 @@
     <!-- Import all Gazebo-customization elements -->
     <xacro:include filename="$(find kinova_description)/urdf/kinova.gazebo" />
 
-    <xacro:property name="link_base_mesh" value="base_table" />
-    <!-- xacro:property name="link_table_mesh" value="table" / -->
+    <xacro:property name="link_base_mesh" value="base" />
+    <xacro:property name="link_table_mesh" value="table" />
     <xacro:property name="link_table_marker_mesh" value="table_Marker" />
     <xacro:property name="link_object_mesh" value="large_vase_2" />
     <xacro:property name="link_1_mesh" value="shoulder" />
@@ -33,6 +33,7 @@
     <xacro:property name="link_5_mesh" value="wrist_spherical_1" />
     <xacro:property name="link_6_mesh" value="wrist_spherical_2" />
     <xacro:property name="link_7_mesh" value="hand_3finger" />
+    <xacro:property name="link_palm_marker_mesh" value="hand_3finger_marker" />
 
     <!--Used for conditional arguments for setting inertial parameters
         base 0, shoulder 1, arm 2, forearm 3, wrist 4, arm_mico 5,
@@ -51,6 +52,7 @@
     <xacro:property name="link_5_mesh_no" value="8" />
     <xacro:property name="link_6_mesh_no" value="9" />
     <xacro:property name="link_7_mesh_no" value="55" />
+    <xacro:property name="link_palm_marker_mesh_no" value="100" />
 
     <xacro:property name="joint_base" value="joint_base" />
     <xacro:property name="joint_base_type" value="fixed" />
@@ -58,11 +60,11 @@
     <xacro:property name="joint_base_origin_xyz" value="0 0 0" />
     <xacro:property name="joint_base_origin_rpy" value="0 0 0" />
 
-    <!-- xacro:property name="joint_table" value="joint_table" / -->
-    <!-- xacro:property name="joint_table_type" value="fixed" / -->
-    <!-- xacro:property name="joint_table_axis_xyz" value="0 0 0" / -->
-    <!-- xacro:property name="joint_table_origin_xyz" value="0 0 0" / -->
-    <!-- xacro:property name="joint_table_origin_rpy" value="0 0 0" / -->
+    <xacro:property name="joint_table" value="joint_table" />
+    <xacro:property name="joint_table_type" value="fixed" />
+    <xacro:property name="joint_table_axis_xyz" value="0 0 0" />
+    <xacro:property name="joint_table_origin_xyz" value="0 0 0" />
+    <xacro:property name="joint_table_origin_rpy" value="0 0 0" />
 
     <xacro:property name="joint_table_marker" value="joint_table_marker" />
     <xacro:property name="joint_table_marker_type" value="fixed" />
@@ -73,7 +75,7 @@
     <xacro:property name="joint_object" value="joint_object" />
     <xacro:property name="joint_object_type" value="fixed" />
     <xacro:property name="joint_object_axis_xyz" value="0 0 0" />
-    <xacro:property name="joint_object_origin_xyz" value="0 -0.32 -0.02" />
+    <xacro:property name="joint_object_origin_xyz" value="0 -0.504 -0.055" />
     <xacro:property name="joint_object_origin_rpy" value="0 0 0" />
 
     <xacro:property name="joint_1" value="joint_1" />
@@ -152,6 +154,12 @@
     <xacro:property name="joint_end_effector_origin_xyz" value="0 0 -0.1600" />
     <xacro:property name="joint_end_effector_origin_rpy" value="${J_PI} 0 ${J_PI/2}" />
 
+    <xacro:property name="joint_palm_marker" value="joint_palm_marker" />
+    <xacro:property name="joint_palm_marker_type" value="fixed" />
+    <xacro:property name="joint_palm_marker_axis_xyz" value="0 0 0" />
+    <xacro:property name="joint_palm_marker_origin_xyz" value="0.047 0 -0.0600" />
+    <xacro:property name="joint_palm_marker_origin_rpy" value="0 ${J_PI/2} 0" />
+
 
     <xacro:macro name="j2s7s300" params="base_parent prefix:=j2s7s300">
 
@@ -160,8 +168,8 @@
         <xacro:kinova_armlink link_name="${prefix}_link_base" link_mesh="${link_base_mesh}" mesh_no="${link_base_mesh_no}"/>
         <xacro:kinova_armjoint joint_name="${prefix}_joint_base" type="${joint_base_type}" parent="${base_parent}" child="${prefix}_link_base" joint_axis_xyz="${joint_base_axis_xyz}" joint_origin_xyz="${joint_base_origin_xyz}" joint_origin_rpy="${joint_base_origin_rpy}" joint_lower_limit="0" joint_upper_limit="0" joint_velocity_limit="0" joint_torque_limit="0" fixed="true"/>
 
-        <!-- xacro:kinova_table link_name="${prefix}_link_table" link_mesh="${link_table_mesh}" mesh_no="${link_table_mesh_no}"/ -->
-        <!-- xacro:kinova_armjoint joint_name="${prefix}_joint_table" type="${joint_table_type}" parent="${base_parent}" child="${prefix}_link_table" joint_axis_xyz="${joint_table_axis_xyz}" joint_origin_xyz="${joint_table_origin_xyz}" joint_origin_rpy="${joint_table_origin_rpy}" joint_lower_limit="0" joint_upper_limit="0" joint_velocity_limit="0" joint_torque_limit="0" fixed="true"/ -->
+        <xacro:kinova_table link_name="${prefix}_link_table" link_mesh="${link_table_mesh}" mesh_no="${link_table_mesh_no}"/>
+        <xacro:kinova_armjoint joint_name="${prefix}_joint_table" type="${joint_table_type}" parent="${base_parent}" child="${prefix}_link_table" joint_axis_xyz="${joint_table_axis_xyz}" joint_origin_xyz="${joint_table_origin_xyz}" joint_origin_rpy="${joint_table_origin_rpy}" joint_lower_limit="0" joint_upper_limit="0" joint_velocity_limit="0" joint_torque_limit="0" fixed="true"/>
 
         <xacro:kinova_marker link_name="${prefix}_link_table_marker" link_mesh="${link_table_marker_mesh}" mesh_no="${link_table_marker_mesh_no}"/>
         <xacro:kinova_armjoint joint_name="${prefix}_joint_table_marker" type="${joint_table_marker_type}" parent="${base_parent}" child="${prefix}_link_table_marker" joint_axis_xyz="${joint_table_marker_axis_xyz}" joint_origin_xyz="${joint_table_marker_origin_xyz}" joint_origin_rpy="${joint_table_marker_origin_rpy}" joint_lower_limit="0" joint_upper_limit="0" joint_velocity_limit="0" joint_torque_limit="0" fixed="true"/>
@@ -194,6 +202,10 @@
 
         <xacro:kinova_virtual_link link_name="${prefix}_end_effector"/>
         <xacro:kinova_virtual_joint joint_name="${prefix}_joint_end_effector" type="${joint_end_effector_type}" parent="${prefix}_link_7" child="${prefix}_end_effector" joint_axis_xyz="${joint_end_effector_axis_xyz}" joint_origin_xyz="${joint_end_effector_origin_xyz}" joint_origin_rpy="${joint_end_effector_origin_rpy}" joint_lower_limit="0" joint_upper_limit="0"/>
+
+        <xacro:kinova_armlink link_name="${prefix}_link_palm_marker" link_mesh="${link_palm_marker_mesh}" mesh_no="${link_palm_marker_mesh_no}"/>
+        <xacro:kinova_armjoint joint_name="${prefix}_joint_palm_marker" type="${joint_palm_marker_type}" parent="${prefix}_link_7" child="${prefix}_link_palm_marker" joint_axis_xyz="${joint_palm_marker_axis_xyz}" joint_origin_xyz="${joint_palm_marker_origin_xyz}" joint_origin_rpy="${joint_palm_marker_origin_rpy}" joint_lower_limit="0" joint_upper_limit="0" joint_velocity_limit="0" joint_torque_limit="0" fixed="true"/>
+
 
         <xacro:kinova_3fingers link_hand="${prefix}_link_7" prefix="${prefix}_"/>
 

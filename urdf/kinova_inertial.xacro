@@ -209,7 +209,7 @@
   <xacro:unless value="${mesh_no - 100}">
     <inertial>
         <mass value="0.01" />
-        <origin xyz="0 0.0497208855 -0.0028562765" />
+        <origin xyz="0.022 0 0" />
         <xacro:inertia_cylinder height="0.03"  radius = "0.04" mass="0.727"/>
     </inertial>
   </xacro:unless>
