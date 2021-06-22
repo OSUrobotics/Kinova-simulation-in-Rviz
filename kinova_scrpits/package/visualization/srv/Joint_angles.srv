@@ -1,5 +1,0 @@
-# inputs
-float64[] angles
----
-# outputs
-bool success
